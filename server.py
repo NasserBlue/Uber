@@ -16,7 +16,7 @@ def get_driver_trips() -> str:
 
 # Expose MCP over HTTP/SSE for Gemini using sse_app()
 app = FastAPI()
-app.mount("/mcp", mcp.sse_app())
+app.mount("/sse", mcp.sse_app())
 
 if __name__ == "__main__":
     import uvicorn
