@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-"mcp<2"
+mcp<2
 uber-rides
