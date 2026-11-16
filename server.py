@@ -1,22 +1,20 @@
 from fastapi import FastAPI
-from mcp.server.fastmcp import FastMCP
+from mcp.server.lowlevel.server import Server
 
-# Initialize FastMCP server
-mcp = FastMCP("Uber Trips MCP")
-
-# Configuration credentials from your Uber Developer Dashboard
-CLIENT_ID = "YXR16Ql_jralhFHU45SFbz2eK7PlQLMm"
-CLIENT_SECRET = "NP_lhlxDJnbTuNTFyftUVrL4DmXKa31dJ5MCyg_J"
-REDIRECT_URI = "http://localhost:8000/callback"
-
-@mcp.tool()
-def get_driver_trips() -> str:
-    """Fetch the driver's past trips and earnings history from Uber."""
-    return "Placeholder: Uber API connection active."
-
-# Expose MCP over HTTP/SSE for Gemini using sse_app()
+# Initialize standard MCP server
 app = FastAPI()
-app.mount("/sse", mcp.sse_app())
+mcp_server = Server("Uber Trips MCP")
+
+@mcp_server.list_tools()
+async def handle_list_tools() -> list:
+    return [{
+        "name": "get_driver_trips",
+        "description": "Fetch the driver's past trips and earnings history from Uber.",
+        "inputSchema": {"type": "object", "properties": {}}
+    }]
+
+# Mount standard ASGI endpoint
+app.mount("/", mcp_server.create_initialization_options()) # Or handle via standard transport
 
 if __name__ == "__main__":
     import uvicorn
